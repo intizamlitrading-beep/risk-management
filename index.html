@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="kaa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Risk basqarıw gúndeligi: kúnlik, háptelik hám aylıq esap">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Risk basqarıw gúndeligi · Риск басқарыў гүнделиги">
+<meta property="og:description" content="Sawdalarıńızdı jazıń, kúnlik maqset hám SL/TP boyınsha esabıńızdı avtomat kóriń.">
+<meta name="theme-color" content="#f59e0b">
+<title>Risk basqarıw gúndeligi</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef2f9;--card:#fff;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--g:#16a34a;--r:#dc2626;--o:#f59e0b;--gbg:#f0fdf4;--rbg:#fef2f2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--card:#131c2e;--ink:#e5e9f2;--mut:#94a3b8;--line:#243049;--gbg:#10261a;--rbg:#2a1416}}
+:root[data-theme="dark"]{--bg:#0b1220;--card:#131c2e;--ink:#e5e9f2;--mut:#94a3b8;--line:#243049;--gbg:#10261a;--rbg:#2a1416}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+.wrap{max-width:1150px;margin:0 auto}
+.top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:22px;margin:0 0 4px}.sub{color:var(--mut);font-size:13px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-top:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi small{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;font-weight:600}
+.kpi b{font-size:21px}
+label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:4px}
+input{width:100%;padding:9px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:15px;min-width:0}
+input.bad{border-color:var(--r);background:var(--rbg);color:var(--r);font-weight:700}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-weight:600;font-size:13px}
+button.pri{background:var(--o);border-color:var(--o);color:#fff}
+.days{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));margin-top:14px;align-items:start}
+.day{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.day.hit{background:var(--gbg);border-color:var(--g)}.day.loss{background:var(--rbg)}
+.day.rest{opacity:.65;border-style:dashed;background:transparent}
+.dh{display:flex;gap:8px;align-items:center;margin-bottom:8px}.rest .dh{margin:0}.dh .tot{margin-left:auto;font-weight:800}
+.th,.tr{display:grid;grid-template-columns:1.3fr .8fr 1fr;gap:6px;margin-bottom:6px}
+.th{font-size:11px;color:var(--mut);font-weight:700;text-transform:uppercase}
+.add{width:100%;margin-top:2px;border-style:dashed;color:var(--mut)}
+.week{grid-column:1/-1;background:linear-gradient(90deg,var(--o),#fbbf24);color:#fff;border-radius:12px;padding:12px 16px;font-weight:800;display:flex;justify-content:space-between}
+.g{color:var(--g)}.r{color:var(--r)}.m{color:var(--mut)}
+.note{border-left:3px solid var(--o);padding:8px 12px;margin-top:12px;font-size:12px;color:var(--mut);background:var(--bg);border-radius:6px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>📊 <span data-t="title"></span></h1>
+      <div class="sub" data-t="sub"></div>
+    </div>
+    <div class="row" style="margin:0"><button id="lLat">Latın</button><button id="lCyr">Кирилл</button></div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div><label data-t="month"></label><input id="ym" type="month"></div>
+      <div><label data-t="dep"></label><input id="dep" type="number" step="any"></div>
+      <div><label data-t="goal"></label><input id="goal" type="number" step="any"></div>
+      <div><label data-t="sl"></label><input id="sl" type="number" step="any"></div>
+      <div><label data-t="tp"></label><input id="tp" type="number" step="any"></div>
+    </div>
+    <div class="grid" id="kpis" style="margin-top:12px"></div>
+    <div class="row">
+      <button class="pri" id="bcsv" data-t="csv"></button>
+      <button id="bjson" data-t="bak"></button>
+      <button id="bimp" data-t="restore"></button>
+      <button id="bclr" data-t="clear"></button>
+      <input id="imp" type="file" accept=".json" hidden>
+    </div>
+    <div class="note"><span data-t="rule"></span><br><span data-t="note"></span></div>
+  </div>
+
+  <div class="days" id="days"></div>
+</div>
+
+<script>
+const KEY="risk-gundelik-v1";
+const L={
+lat:{title:"Risk basqarıw gúndeligi",sub:"Sawdalarıńızdı jazıń. Kúnlik, háptelik hám aylıq esap avtomat shıǵadı.",
+month:"Ay",dep:"Ulıwma summa ($)",goal:"Kúnlik maqset ($)",sl:"Strategiya boyınsha SL ($)",tp:"Strategiya boyınsha TP ($)",
+csv:"CSV júklew",bak:"Rezerv nusqa (JSON)",restore:"Rezerv nusqanı ashıw",clear:"Usı aydı tazalaw",
+rule:"Háptede 5 sawda kúni bar (Dúyshembi–Juma). Shembi hám Yekshembi dem alıs kúnleri, sawda jazılmaydı.",
+note:"Qızıl maydan: bir sawdadaǵı zıyan SL limitinen artıq. Maǵlıwmatlar tek usı qurılmanıń brauzerinde saqlanadı. Basqa telefonǵa ótkeriw ushın rezerv nusqa (JSON) jasań.",
+kot:"Kotirovka",lot:"Lot",pl:"Payda/Zıyan $",add:"+ Sawda qosıw",rest:"Dem alıs kúni",week:"{n}-hápte esabı",
+bal:"Balans",mon:"Aylıq esap",gdays:"Maqset orınlanǵan kúnler",wr:"Paydalı sawdalar",risk:"Bir sawdada risk",rr:"Risk : Payda",goalk:"Kúnlik maqset",depp:"% depozit",dayu:"kún",
+confirm:"Usı aydaǵı barlıq sawdalar óshirilsin be?",bad:"Fayl qáte",csvh:"Kún,Sane,Kotirovka,Lot,Payda/Zıyan",
+wd:["Dúyshembi","Siyshembi","Sárshembi","Piyshembi","Juma","Shembi","Yekshembi"]},
+cyr:{title:"Риск басқарыў гүнделиги",sub:"Саўдаларыңызды жазың. Күнлик, ҳәптелик ҳәм айлық есап автомат шығады.",
+month:"Ай",dep:"Улыўма сумма ($)",goal:"Күнлик мақсет ($)",sl:"Стратегия бойынша SL ($)",tp:"Стратегия бойынша TP ($)",
+csv:"CSV жүклеў",bak:"Резерв нусқа (JSON)",restore:"Резерв нусқаны ашыў",clear:"Усы айды тазалаў",
+rule:"Ҳәптеде 5 саўда күни бар (Дүйшемби–Жума). Шемби ҳәм Екшемби дем алыс күнлери, саўда жазылмайды.",
+note:"Қызыл майдан: бир саўдадағы зыян SL лимитинен артық. Мағлыўматлар тек усы қурылманың браузеринде сақланады. Басқа телефонға өткериў ушын резерв нусқа (JSON) жасаң.",
+kot:"Котировка",lot:"Лот",pl:"Пайда/Зыян $",add:"+ Саўда қосыў",rest:"Дем алыс күни",week:"{n}-ҳәпте есабы",
+bal:"Баланс",mon:"Айлық есап",gdays:"Мақсет орынланған күнлер",wr:"Пайдалы саўдалар",risk:"Бир саўдада риск",rr:"Риск : Пайда",goalk:"Күнлик мақсет",depp:"% депозит",dayu:"күн",
+confirm:"Усы айдағы барлық саўдалар өширилсин бе?",bad:"Файл қәте",csvh:"Күн,Сане,Котировка,Лот,Пайда/Зыян",
+wd:["Дүйшемби","Сийшемби","Сәршемби","Пийшемби","Жума","Шемби","Екшемби"]}
+};
+let S={set:{goal:50,dep:1000,sl:20,tp:100},data:{},lang:"lat"};
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const $=id=>document.getElementById(id);
+const T=k=>(L[S.lang]||L.lat)[k];
+const pad=n=>String(n).padStart(2,"0");
+const num=v=>{const n=parseFloat(String(v).replace(",","."));return isNaN(n)?0:n;};
+const fmt=n=>(n<0?"−":n>0?"+":"")+"$"+Math.abs(n).toFixed(2);
+const cls=n=>n>0?"g":n<0?"r":"m";
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const now=new Date();
+let ym=now.getFullYear()+"-"+pad(now.getMonth()+1);
+
+function rows(d){
+  const m=S.data[ym]||(S.data[ym]={});
+  return m[d]||(m[d]=Array.from({length:5},()=>["","",""]));
+}
+function dim(){const [y,m]=ym.split("-").map(Number);return{y,m,n:new Date(y,m,0).getDate()};}
+const wdi=(y,m,d)=>(new Date(y,m-1,d).getDay()+6)%7; // 0=Dúyshembi ... 6=Yekshembi
+
+function applyLang(){
+  document.querySelectorAll("[data-t]").forEach(e=>{e.textContent=T(e.dataset.t);});
+  document.title=T("title");
+  $("lLat").classList.toggle("pri",S.lang==="lat");
+  $("lCyr").classList.toggle("pri",S.lang==="cyr");
+}
+
+function render(){
+  const {y,m,n}=dim();let h="",has=false,w=1;
+  for(let d=1;d<=n;d++){
+    const wi=wdi(y,m,d),ds=pad(d)+"."+pad(m)+"."+y,name=T("wd")[wi];
+    if(wi>=5){
+      h+=`<div class="day rest"><div class="dh"><b>${name}</b><span class="m">${ds}</span><span class="tot m">${T("rest")}</span></div></div>`;
+    }else{
+      has=true;
+      h+=`<div class="day" id="day${d}"><div class="dh"><b>${name}</b><span class="m">${ds}</span><span class="tot" id="dt${d}"></span></div>
+      <div class="th"><span>${T("kot")}</span><span>${T("lot")}</span><span>${T("pl")}</span></div>`;
+      rows(d).forEach((r,i)=>{
+        h+=`<div class="tr" data-d="${d}" data-i="${i}"><input data-k="0" placeholder="EURUSD" value="${esc(r[0])}"><input data-k="1" placeholder="0.01" inputmode="decimal" value="${esc(r[1])}"><input data-k="2" placeholder="0.00" value="${esc(r[2])}"></div>`;
+      });
+      h+=`<button class="add" data-d="${d}">${T("add")}</button></div>`;
+    }
+    if(wi===6||d===n){if(has)h+=`<div class="week" id="wk${w}"></div>`;w++;has=false;}
+  }
+  $("days").innerHTML=h;recalc();
+}
+
+function recalc(){
+  const {goal,dep,sl,tp}=S.set,{y,m,n}=dim();
+  let tot=0,goalDays=0,win=0,cnt=0,w=1;const wk={};
+  for(let d=1;d<=n;d++){
+    const wi=wdi(y,m,d);
+    if(wi<5){
+      let s=0;
+      rows(d).forEach((r,i)=>{
+        const p=num(r[2]);s+=p;
+        if(String(r[2]).trim()!==""){cnt++;if(p>0)win++;}
+        const el=document.querySelector(`.tr[data-d="${d}"][data-i="${i}"] [data-k="2"]`);
+        if(el)el.classList.toggle("bad",p<0&&-p>sl);
+      });
+      const hit=goal>0&&s>=goal;
+      if(hit)goalDays++;
+      const tt=$("dt"+d);tt.textContent=(hit?"✓ ":"")+fmt(s);tt.className="tot "+cls(s);
+      const card=$("day"+d);card.classList.toggle("hit",hit);card.classList.toggle("loss",s<0);
+      tot+=s;wk[w]=(wk[w]||0)+s;
+    }
+    if(wi===6)w++;
+  }
+  Object.keys(wk).forEach((key,idx)=>{
+    const e=$("wk"+key);
+    if(e)e.innerHTML=`<span>${T("week").replace("{n}",idx+1)}</span><span>${fmt(wk[key])}</span>`;
+  });
+  const k=[
+    [T("bal"),"$"+(dep+tot).toFixed(2),cls(tot)],
+    [T("mon"),fmt(tot),cls(tot)],
+    [T("gdays"),goalDays+" "+T("dayu"),""],
+    [T("wr"),cnt?(win/cnt*100).toFixed(0)+"% ("+cnt+")":"—",""],
+    [T("risk"),dep?(sl/dep*100).toFixed(1)+"%":"—",""],
+    [T("rr"),sl?"1 : "+(tp/sl).toFixed(1):"—",""],
+    [T("goalk"),dep?(goal/dep*100).toFixed(1)+T("depp"):"—",""]
+  ];
+  $("kpis").innerHTML=k.map(x=>`<div class="kpi"><small>${x[0]}</small><b class="${x[2]}">${x[1]}</b></div>`).join("");
+}
+
+function syncSet(){["dep","goal","sl","tp"].forEach(id=>$(id).value=S.set[id]);$("ym").value=ym;}
+
+$("days").addEventListener("input",e=>{
+  const tr=e.target.closest(".tr");if(!tr)return;
+  rows(+tr.dataset.d)[+tr.dataset.i][+e.target.dataset.k]=e.target.value;
+  save();recalc();
+});
+$("days").addEventListener("click",e=>{
+  const b=e.target.closest(".add");if(!b)return;
+  rows(+b.dataset.d).push(["","",""]);save();render();
+});
+["dep","goal","sl","tp"].forEach(id=>$(id).addEventListener("input",()=>{S.set[id]=num($(id).value);save();recalc();}));
+$("ym").addEventListener("change",e=>{if(e.target.value){ym=e.target.value;render();}});
+[["lLat","lat"],["lCyr","cyr"]].forEach(([id,lg])=>$(id).addEventListener("click",()=>{S.lang=lg;save();applyLang();render();}));
+
+function dl(name,text,type){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+$("bcsv").addEventListener("click",()=>{
+  const {y,m,n}=dim();let c=T("csvh")+"\n";
+  for(let d=1;d<=n;d++){
+    if(wdi(y,m,d)>=5)continue;
+    rows(d).forEach(r=>{
+      if(r.some(x=>String(x).trim()))c+=`${d},${pad(d)}.${pad(m)}.${y},"${r[0]}",${r[1]},${num(r[2])}\n`;
+    });
+  }
+  dl("risk-"+ym+".csv","\ufeff"+c,"text/csv");
+});
+$("bjson").addEventListener("click",()=>dl("risk-rezerv.json",JSON.stringify(S),"application/json"));
+$("bimp").addEventListener("click",()=>$("imp").click());
+$("imp").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const j=JSON.parse(r.result);if(j&&j.set&&j.data){S=Object.assign({lang:S.lang},j);save();syncSet();applyLang();render();}else alert(T("bad"));}catch(x){alert(T("bad"));}};
+  r.readAsText(f);e.target.value="";
+});
+$("bclr").addEventListener("click",()=>{
+  if(confirm(T("confirm"))){delete S.data[ym];save();render();}
+});
+
+syncSet();applyLang();render();
+</script>
+</body>
+</html>
